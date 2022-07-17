@@ -14,16 +14,6 @@ module.exports = {
         es6: true,
     },
     rules: {
-        "vue/max-attributes-per-line": [
-            "error",
-            {
-                singleline: {
-                    max: 2,
-                },
-                multiline: {
-                    max: 2,
-                },
-            },
-        ],
+        "@typescript-eslint/no-explicit-any": "off",
     },
 };
