@@ -16,6 +16,7 @@ export const useMainStore = defineStore({
         cards: [] as number[],
         activeCardIndex: -1 as number,
         slots: [-1, -1, -1, -1] as [number, number, number, number],
+        selectedCard: -1 as number,
     }),
     getters: {},
     actions: {
@@ -44,6 +45,12 @@ export const useMainStore = defineStore({
                 this.activeCardIndex += 1;
             }
         },
+        previousCard() {
+            if (this.activeCardIndex === 0) {
+                this.activeCardIndex += 1;
+            }
+            this.activeCardIndex -= 1;
+        },
         getCardNumber(card: number): number | string {
             const cardNum = card % 13;
             if (cardNum === 1) {
@@ -62,6 +69,37 @@ export const useMainStore = defineStore({
         },
         getCardSuit(card: number): number {
             return Math.floor(card / 13) === 4 ? 3 : Math.floor(card / 13);
+        },
+        selectCard(card: number) {
+            this.selectedCard = card;
+        },
+        sendCardToSlot(card: number) {
+            const suit = this.getCardSuit(card);
+            const number = this.getCardNumber(card);
+            if (
+                (this.slots[suit] === -1 && number === "A") ||
+                this.isOneLess(number, this.getCardNumber(this.slots[suit]))
+            ) {
+                this.slots[suit] = card;
+                this.previousCard();
+                this.cards.splice(this.cards.indexOf(card), 1);
+            }
+        },
+        isOneLess(firstCard: number | string, secondCard: number | string) {
+            console.log(firstCard, secondCard);
+            if (
+                typeof firstCard === "string" ||
+                typeof secondCard === "string"
+            ) {
+                return (
+                    (firstCard === "A" && secondCard === "K") ||
+                    (firstCard === "K" && secondCard === "Q") ||
+                    (firstCard === "Q" && secondCard === "J") ||
+                    (firstCard === "J" && secondCard === 10) ||
+                    (firstCard === 2 && secondCard === "A")
+                );
+            }
+            return firstCard === secondCard - 1;
         },
     },
     persist: true,
