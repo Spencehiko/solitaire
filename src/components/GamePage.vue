@@ -24,10 +24,10 @@ onMounted(() => {
 
 <template>
     <div class="p-10">
-        <div class="header flex gap-5">
+        <div class="flex gap-5">
             <div class="basis-1/7">
                 <button
-                    class="h-40 w-32 bg-darkest-green border-2 border-white rounded hover:bg-light-green transition-all duration-200"
+                    class="h-40 w-32 block mx-auto bg-darkest-green border-2 border-white rounded hover:bg-light-green transition-all duration-200"
                     @click="nextCard"
                     v-if="activeCardIndex !== cards.length - 1"
                 ></button>
@@ -42,7 +42,7 @@ onMounted(() => {
             <div class="basis-1/7">
                 <button
                     v-if="activeCardIndex !== -1"
-                    class="h-40 w-32 bg-white rounded relative"
+                    class="h-40 w-32 mx-auto bg-white rounded relative"
                     @click="selectCard(cards[activeCardIndex])"
                     @dblclick="sendCardToSlot(cards[activeCardIndex])"
                 >
@@ -83,7 +83,7 @@ onMounted(() => {
                 :key="index"
             >
                 <div
-                    class="h-40 w-32 border-2 border-white rounded flex"
+                    class="h-40 w-32 mx-auto border-2 border-white rounded flex"
                     v-if="lastCard === -1"
                 >
                     <img
@@ -91,7 +91,10 @@ onMounted(() => {
                         class="h-24 w-24 m-auto"
                     />
                 </div>
-                <div v-else class="h-40 w-32 bg-white rounded relative flex">
+                <div
+                    v-else
+                    class="h-40 w-32 mx-auto bg-white rounded relative flex"
+                >
                     <div class="absolute left-2 top-2 flex flex-col">
                         <span>{{ getCardNumber(lastCard) }}</span>
                         <img
@@ -115,8 +118,56 @@ onMounted(() => {
                 </div>
             </div>
         </div>
-        <div class="board">
-            {{ board }}
+        <div class="mt-10 flex gap-5">
+            <div
+                class="basis-1/7"
+                v-for="(column, index) in board"
+                :key="index"
+            >
+                <div
+                    class="mx-auto flex flex-col relative"
+                    v-for="(card, cardIndex) in column"
+                    :key="cardIndex"
+                >
+                    <div
+                        v-if="card > 0"
+                        class="absolute left-1/2 -translate-x-1/2"
+                        :style="{ top: cardIndex * 1.25 + 'rem' }"
+                    >
+                        <button
+                            class="h-40 w-32 bg-white rounded relative"
+                            @click="selectCard(card)"
+                            @dblclick="sendCardToSlot(card)"
+                        >
+                            <div class="absolute left-2 top-2 flex flex-col">
+                                <span>{{ getCardNumber(card) }}</span>
+                                <img
+                                    class="h-4 w-4"
+                                    :src="`suits/${getCardSuit(card)}.png`"
+                                />
+                            </div>
+                            <img
+                                :src="'suits/' + getCardSuit(card) + '.png'"
+                                class="h-16 w-16 m-auto"
+                            />
+                            <div
+                                class="absolute right-2 bottom-2 flex flex-col -scale-100"
+                            >
+                                <span>{{ getCardNumber(card) }}</span>
+                                <img
+                                    class="h-4 w-4"
+                                    :src="`suits/${getCardSuit(card)}.png`"
+                                />
+                            </div>
+                        </button>
+                    </div>
+                    <div
+                        class="h-40 w-32 bg-darkest-green border-2 border-white rounded absolute left-1/2 -translate-x-1/2"
+                        :style="{ top: cardIndex * 1.25 + 'rem' }"
+                        v-else
+                    ></div>
+                </div>
+            </div>
         </div>
     </div>
 </template>
