@@ -4,8 +4,7 @@ import { storeToRefs } from "pinia";
 import { onMounted } from "vue";
 
 const store = useMainStore();
-const { cards, activeCardIndex, board, slots, selectedCard } =
-    storeToRefs(store);
+const { cards, activeCardIndex, board, slots } = storeToRefs(store);
 const {
     startGame,
     nextCard,

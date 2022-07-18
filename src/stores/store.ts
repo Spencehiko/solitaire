@@ -86,7 +86,6 @@ export const useMainStore = defineStore({
             }
         },
         isOneLess(firstCard: number | string, secondCard: number | string) {
-            console.log(firstCard, secondCard);
             if (
                 typeof firstCard === "string" ||
                 typeof secondCard === "string"
