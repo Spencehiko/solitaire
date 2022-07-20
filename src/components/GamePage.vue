@@ -4,7 +4,8 @@ import { storeToRefs } from "pinia";
 import { onMounted } from "vue";
 
 const store = useMainStore();
-const { cards, activeCardIndex, board, slots } = storeToRefs(store);
+const { cards, activeCardIndex, board, slots, selectedCard } =
+    storeToRefs(store);
 const {
     startGame,
     nextCard,
@@ -12,14 +13,31 @@ const {
     getCardSuit,
     selectCard,
     sendCardToSlot,
+    checkDrop,
 } = store;
 
 onMounted(() => {
     activeCardIndex.value = -1;
+    selectedCard.value = -1;
     if (!cards.value[0]) {
         startGame();
     }
 });
+
+const dragEndHandler = (event: any) => {
+    event.preventDefault();
+    const selectedCard = event.target.getAttribute("data-number");
+    const { screenX, screenY } = event;
+    const closestCard = document
+        .elementsFromPoint(screenX, screenY)
+        .find((element: any) => {
+            console.log(element.classList);
+            return element.classList.contains("draggable-card");
+        });
+    console.log(closestCard);
+    console.log(closestCard?.getAttribute("data-number"));
+    console.log(document.elementsFromPoint(screenX, screenY));
+};
 </script>
 
 <template>
@@ -27,7 +45,7 @@ onMounted(() => {
         <div class="flex gap-5">
             <div class="basis-1/7">
                 <button
-                    class="h-40 w-32 block mx-auto bg-darkest-green border-2 border-white rounded hover:bg-light-green transition-all duration-200"
+                    class="h-40 w-32 block mx-auto bg-darkest-green border-4 border-white rounded hover:bg-light-green transition-all duration-200"
                     @click="nextCard"
                     v-if="activeCardIndex !== cards.length - 1"
                 ></button>
@@ -42,7 +60,11 @@ onMounted(() => {
             <div class="basis-1/7">
                 <button
                     v-if="activeCardIndex !== -1"
-                    class="h-40 w-32 mx-auto bg-white rounded relative"
+                    class="h-40 w-32 mx-auto bg-white border-4 border-transparent rounded relative flex"
+                    :class="{
+                        'border-suits-red':
+                            selectedCard === cards[activeCardIndex],
+                    }"
                     @click="selectCard(cards[activeCardIndex])"
                     @dblclick="sendCardToSlot(cards[activeCardIndex])"
                 >
@@ -83,7 +105,7 @@ onMounted(() => {
                 :key="index"
             >
                 <div
-                    class="h-40 w-32 mx-auto border-2 border-white rounded flex"
+                    class="h-40 w-32 mx-auto border-4 border-white rounded flex"
                     v-if="lastCard === -1"
                 >
                     <img
@@ -132,38 +154,60 @@ onMounted(() => {
                     <div
                         v-if="card > 0"
                         class="absolute left-1/2 -translate-x-1/2"
-                        :style="{ top: cardIndex * 1.25 + 'rem' }"
+                        :style="{
+                            top: cardIndex * 1.25 + 'rem',
+                            'margin-left': cardIndex * 0.25 + 'rem',
+                        }"
                     >
-                        <button
-                            class="h-40 w-32 bg-white rounded relative"
+                        <div
+                            class="h-40 w-32 bg-white border-4 border-transparent rounded relative flex cursor-pointer select-none draggable-card"
+                            :class="{
+                                'border-suits-red': selectedCard === card,
+                            }"
                             @click="selectCard(card)"
                             @dblclick="sendCardToSlot(card)"
+                            draggable="true"
+                            :data-number="card"
+                            @dragend="dragEndHandler"
                         >
-                            <div class="absolute left-2 top-2 flex flex-col">
-                                <span>{{ getCardNumber(card) }}</span>
+                            <div
+                                class="absolute left-2 top-2 flex flex-col"
+                                draggable="false"
+                            >
+                                <span class="text-center">{{
+                                    getCardNumber(card)
+                                }}</span>
                                 <img
                                     class="h-4 w-4"
                                     :src="`suits/${getCardSuit(card)}.png`"
+                                    draggable="false"
                                 />
                             </div>
                             <img
                                 :src="'suits/' + getCardSuit(card) + '.png'"
-                                class="h-16 w-16 m-auto"
+                                class="h-16 w-16 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
+                                draggable="false"
                             />
                             <div
                                 class="absolute right-2 bottom-2 flex flex-col -scale-100"
+                                draggable="false"
                             >
-                                <span>{{ getCardNumber(card) }}</span>
+                                <span class="text-center">{{
+                                    getCardNumber(card)
+                                }}</span>
                                 <img
                                     class="h-4 w-4"
                                     :src="`suits/${getCardSuit(card)}.png`"
                                 />
                             </div>
-                        </button>
+                        </div>
                     </div>
                     <div
                         class="h-40 w-32 bg-darkest-green border-2 border-white rounded absolute left-1/2 -translate-x-1/2"
-                        :style="{ top: cardIndex * 1.25 + 'rem' }"
+                        :style="{
+                            top: cardIndex * 1.25 + 'rem',
+                            'margin-left': cardIndex * 0.25 + 'rem',
+                        }"
                         v-else
                     ></div>
                 </div>
@@ -171,3 +215,8 @@ onMounted(() => {
         </div>
     </div>
 </template>
+<style scoped>
+.draggable-card:active {
+    background-color: blueviolet;
+}
+</style>

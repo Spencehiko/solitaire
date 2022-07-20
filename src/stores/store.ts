@@ -44,6 +44,7 @@ export const useMainStore = defineStore({
             } else {
                 this.activeCardIndex += 1;
             }
+            this.selectedCard = -1;
         },
         previousCard() {
             if (this.activeCardIndex === 0) {
@@ -99,6 +100,10 @@ export const useMainStore = defineStore({
                 );
             }
             return firstCard === secondCard - 1;
+        },
+        checkDrop(event: MouseEvent) {
+            console.log(event);
+            console.log("WEEEEEE");
         },
     },
     persist: true,
