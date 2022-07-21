@@ -71,22 +71,28 @@ export const useMainStore = defineStore({
         },
         isOneLess(firstCard: number | string, secondCard: number | string) {
             if (typeof firstCard === "string" || typeof secondCard === "string") {
-                return (
-                    (firstCard === "A" && secondCard === "K") ||
-                    (firstCard === "K" && secondCard === "Q") ||
-                    (firstCard === "Q" && secondCard === "J") ||
-                    (firstCard === "J" && secondCard === 10) ||
-                    (firstCard === 2 && secondCard === "A")
-                );
+                return (firstCard === "Q" && secondCard === "K") || (firstCard === "Q" && secondCard === "J") || (firstCard === "J" && secondCard === 10) || (firstCard === 2 && secondCard === "A");
             }
             return firstCard === secondCard - 1;
         },
-        checkDrop(targetCard: number, droppedSlot: number) {
+        checkDrop(pickedCard: number, droppedSlot: number) {
             const lastCardOnSlot = this.board[droppedSlot][this.board[droppedSlot].length - 1];
-            if (lastCardOnSlot === targetCard) {
+            if (lastCardOnSlot === pickedCard) {
                 return;
             }
+            if (this.isColored(pickedCard) === this.isColored(lastCardOnSlot)) {
+                return;
+            }
+            if (this.isOneLess(this.getCardNumber(pickedCard), this.getCardNumber(lastCardOnSlot))) {
+                const pickedCardSlot = this.board.findIndex((slot) => slot.includes(pickedCard));
+                this.board[droppedSlot][this.board[droppedSlot].length] = pickedCard;
+                this.board[pickedCardSlot].splice(-1, 1);
+                this.board[pickedCardSlot][this.board[pickedCardSlot].length - 1] = -this.board[pickedCardSlot][this.board[pickedCardSlot].length - 1];
+            }
+        },
+        isColored(card: number) {
+            return card < 27;
         },
     },
-    persist: true,
+    persist: false,
 });
