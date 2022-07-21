@@ -13,7 +13,6 @@ const {
     getCardSuit,
     selectCard,
     sendCardToSlot,
-    checkDrop,
 } = store;
 
 onMounted(() => {
@@ -24,19 +23,15 @@ onMounted(() => {
     }
 });
 
-const dragEndHandler = (event: any) => {
-    event.preventDefault();
-    const selectedCard = event.target.getAttribute("data-number");
-    const { screenX, screenY } = event;
-    const closestCard = document
-        .elementsFromPoint(screenX, screenY)
-        .find((element: any) => {
-            console.log(element.classList);
-            return element.classList.contains("draggable-card");
-        });
-    console.log(closestCard);
-    console.log(closestCard?.getAttribute("data-number"));
-    console.log(document.elementsFromPoint(screenX, screenY));
+let targetCard = -1;
+let droppedCard = -1;
+const dragEndHandler = (card: any) => {
+    droppedCard = card;
+    console.log("droppedCard", droppedCard);
+    console.log("targetCard", targetCard);
+};
+const dragOverHandler = (card: any) => {
+    targetCard = card;
 };
 </script>
 
@@ -142,25 +137,23 @@ const dragEndHandler = (event: any) => {
         </div>
         <div class="mt-10 flex gap-5">
             <div
-                class="basis-1/7"
+                class="basis-1/7 flex flex-col mt-40"
                 v-for="(column, index) in board"
                 :key="index"
             >
                 <div
-                    class="mx-auto flex flex-col relative"
+                    class="mx-auto"
                     v-for="(card, cardIndex) in column"
                     :key="cardIndex"
                 >
                     <div
                         v-if="card > 0"
-                        class="absolute left-1/2 -translate-x-1/2"
                         :style="{
-                            top: cardIndex * 1.25 + 'rem',
-                            'margin-left': cardIndex * 0.25 + 'rem',
+                            'margin-left': cardIndex * 0.5 + 'rem',
                         }"
                     >
                         <div
-                            class="h-40 w-32 bg-white border-4 border-transparent rounded relative flex cursor-pointer select-none draggable-card"
+                            class="h-40 w-32 bg-white border-4 border-transparent rounded relative flex cursor-pointer select-none draggable-card -mt-36"
                             :class="{
                                 'border-suits-red': selectedCard === card,
                             }"
@@ -168,7 +161,8 @@ const dragEndHandler = (event: any) => {
                             @dblclick="sendCardToSlot(card)"
                             draggable="true"
                             :data-number="card"
-                            @dragend="dragEndHandler"
+                            @dragend="dragEndHandler(card)"
+                            @dragover="dragOverHandler(card)"
                         >
                             <div
                                 class="absolute left-2 top-2 flex flex-col"
@@ -203,10 +197,9 @@ const dragEndHandler = (event: any) => {
                         </div>
                     </div>
                     <div
-                        class="h-40 w-32 bg-darkest-green border-2 border-white rounded absolute left-1/2 -translate-x-1/2"
+                        class="h-40 w-32 bg-darkest-green border-2 border-white rounded -mt-36"
                         :style="{
-                            top: cardIndex * 1.25 + 'rem',
-                            'margin-left': cardIndex * 0.25 + 'rem',
+                            'margin-left': cardIndex * 0.5 + 'rem',
                         }"
                         v-else
                     ></div>
@@ -215,8 +208,3 @@ const dragEndHandler = (event: any) => {
         </div>
     </div>
 </template>
-<style scoped>
-.draggable-card:active {
-    background-color: blueviolet;
-}
-</style>
