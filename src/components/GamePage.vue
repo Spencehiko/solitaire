@@ -5,7 +5,7 @@ import { onMounted } from "vue";
 
 const store = useMainStore();
 const { cards, activeCardIndex, board, slots } = storeToRefs(store);
-const { startGame, nextCard, getCardNumber, getCardSuit, sendCardToSlot, checkDrop } = store;
+const { startGame, nextCard, getCardNumber, getCardSuit, sendCardToSlot, sendCardToSlotFromBoard, checkDrop } = store;
 
 onMounted(() => {
     activeCardIndex.value = -1;
@@ -81,23 +81,23 @@ const dragOverHandler = (slot: any) => {
                     <div
                         v-if="card > 0"
                         :style="{
-                            'margin-left': cardIndex * 0.5 + 'rem',
+                            'margin-left': cardIndex * 0.75 + 'rem',
                         }"
                     >
                         <div
-                            class="h-40 w-32 bg-white border-4 border-transparent rounded relative flex cursor-pointer select-none draggable-card -mt-36"
-                            @click="sendCardToSlot(card)"
+                            class="h-40 w-32 bg-white border-2 border-darkest-green rounded relative flex cursor-pointer select-none draggable-card -mt-36 mb-8"
+                            @click="sendCardToSlotFromBoard(card)"
                             draggable="true"
                             :data-number="card"
                             @dragend="dragEndHandler(card)"
                             @dragover="dragOverHandler(slot)"
                         >
-                            <div class="absolute left-2 top-2 flex flex-col" draggable="false">
+                            <div class="absolute left-1 top-1 flex flex-col" draggable="false">
                                 <span class="text-center">{{ getCardNumber(card) }}</span>
                                 <img class="h-4 w-4" :src="`suits/${getCardSuit(card)}.png`" draggable="false" />
                             </div>
                             <img :src="'suits/' + getCardSuit(card) + '.png'" class="h-16 w-16 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" draggable="false" />
-                            <div class="absolute right-2 bottom-2 flex flex-col -scale-100" draggable="false">
+                            <div class="absolute right-1 bottom-1 flex flex-col -scale-100" draggable="false">
                                 <span class="text-center">{{ getCardNumber(card) }}</span>
                                 <img class="h-4 w-4" :src="`suits/${getCardSuit(card)}.png`" />
                             </div>
@@ -106,7 +106,7 @@ const dragOverHandler = (slot: any) => {
                     <div
                         class="h-40 w-32 bg-darkest-green border-2 border-white rounded -mt-36"
                         :style="{
-                            'margin-left': cardIndex * 0.5 + 'rem',
+                            'margin-left': cardIndex * 0.75 + 'rem',
                         }"
                         v-else
                     ></div>

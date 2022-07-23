@@ -69,24 +69,46 @@ export const useMainStore = defineStore({
                 this.cards.splice(this.cards.indexOf(card), 1);
             }
         },
-        isOneLess(firstCard: number | string, secondCard: number | string) {
-            if (typeof firstCard === "string" || typeof secondCard === "string") {
-                return (firstCard === "Q" && secondCard === "K") || (firstCard === "Q" && secondCard === "J") || (firstCard === "J" && secondCard === 10) || (firstCard === 2 && secondCard === "A");
+        sendCardToSlotFromBoard(card: number) {
+            const cardToSendSlot = this.board.findIndex((slot) => slot.includes(card));
+            if (this.board[cardToSendSlot][this.board[cardToSendSlot].length - 1] !== card) {
+                return;
             }
-            return firstCard === secondCard - 1;
+            const suit = this.getCardSuit(card);
+            const number = this.getCardNumber(card);
+            if ((this.slots[suit] === -1 && number === "A") || this.isOneLess(number, this.getCardNumber(this.slots[suit]))) {
+                this.slots[suit] = card;
+                this.board[cardToSendSlot].splice(-1, 1);
+                this.board[cardToSendSlot][this.board[cardToSendSlot].length - 1] = -this.board[cardToSendSlot][this.board[cardToSendSlot].length - 1];
+            }
+        },
+        isOneLess(bigCard: number | string, smallCard: number | string) {
+            console.log(bigCard, smallCard);
+            if (typeof bigCard === "string" || typeof smallCard === "string") {
+                return (bigCard === "K" && smallCard === "Q") || (bigCard === "Q" && smallCard === "J") || (bigCard === "J" && smallCard === 10) || (bigCard === 2 && smallCard === "A");
+            }
+            return bigCard - 1 === smallCard;
         },
         checkDrop(pickedCard: number, droppedSlot: number) {
             const lastCardOnSlot = this.board[droppedSlot][this.board[droppedSlot].length - 1];
             if (lastCardOnSlot === pickedCard) {
                 return;
             }
+            console.log(pickedCard, lastCardOnSlot);
+            console.log(this.isColored(pickedCard), this.isColored(lastCardOnSlot));
             if (this.isColored(pickedCard) === this.isColored(lastCardOnSlot)) {
                 return;
             }
-            if (this.isOneLess(this.getCardNumber(pickedCard), this.getCardNumber(lastCardOnSlot))) {
+            console.log("CONDITION MET");
+            if (this.isOneLess(this.getCardNumber(lastCardOnSlot), this.getCardNumber(pickedCard))) {
                 const pickedCardSlot = this.board.findIndex((slot) => slot.includes(pickedCard));
-                this.board[droppedSlot][this.board[droppedSlot].length] = pickedCard;
-                this.board[pickedCardSlot].splice(-1, 1);
+                const indexOfPickedCard = this.board[pickedCardSlot].indexOf(pickedCard);
+                let count = 0;
+                for (let i = indexOfPickedCard; i < this.board[pickedCardSlot].length; i++) {
+                    this.board[droppedSlot].push(this.board[pickedCardSlot][i]);
+                    count++;
+                }
+                this.board[pickedCardSlot].splice(indexOfPickedCard, count);
                 this.board[pickedCardSlot][this.board[pickedCardSlot].length - 1] = -this.board[pickedCardSlot][this.board[pickedCardSlot].length - 1];
             }
         },
@@ -94,5 +116,5 @@ export const useMainStore = defineStore({
             return card < 27;
         },
     },
-    persist: false,
+    persist: true,
 });
