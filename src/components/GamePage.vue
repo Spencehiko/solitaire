@@ -5,7 +5,7 @@ import { onMounted } from "vue";
 
 const store = useMainStore();
 const { cards, activeCardIndex, board, slots } = storeToRefs(store);
-const { startGame, nextCard, getCardNumber, getCardSuit, sendCardToSlot, sendCardToSlotFromBoard, checkDrop } = store;
+const { startGame, nextCard, getCardNumber, getCardSuit, sendCardToSlot, sendCardToSlotFromBoard, checkDrop, checkDropFromCards } = store;
 
 onMounted(() => {
     activeCardIndex.value = -1;
@@ -19,6 +19,10 @@ let droppedSlot = -1;
 const dragEndHandler = (card: any) => {
     targetCard = card;
     checkDrop(targetCard, droppedSlot);
+};
+const dragEndHandlerFromCards = (card: any) => {
+    targetCard = card;
+    checkDropFromCards(targetCard, droppedSlot);
 };
 const dragOverHandler = (slot: any) => {
     droppedSlot = slot;
@@ -44,7 +48,7 @@ const dragOverHandler = (slot: any) => {
                     class="h-40 w-32 mx-auto bg-white border-4 border-transparent rounded relative flex"
                     draggable="true"
                     @click="sendCardToSlot(cards[activeCardIndex])"
-                    @dragend="dragEndHandler(cards[activeCardIndex])"
+                    @dragend="dragEndHandlerFromCards(cards[activeCardIndex])"
                 >
                     <div class="absolute left-2 top-2 flex flex-col" draggable="false">
                         <span>{{ getCardNumber(cards[activeCardIndex]) }}</span>
