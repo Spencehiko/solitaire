@@ -90,6 +90,7 @@ export const useMainStore = defineStore({
                 for (let i = indexOfCard; i < this.board[cardToSendSlot].length; i++) {
                     this.board[emptySlot].push(this.board[cardToSendSlot][i]);
                     this.board[cardToSendSlot].splice(-1, 1);
+                    this.board[cardToSendSlot][this.board[cardToSendSlot].length - 1] = -this.board[cardToSendSlot][this.board[cardToSendSlot].length - 1];
                 }
             }
             if (this.board[cardToSendSlot][this.board[cardToSendSlot].length - 1] !== card) {
@@ -97,7 +98,11 @@ export const useMainStore = defineStore({
             }
             if ((this.slots[suit] === -1 && number === "A") || this.isOneLess(number, this.getCardNumber(this.slots[suit]))) {
                 this.slots[suit] = card;
-                this.deleteCardFromBoard(card);
+                const pickedCardSlot = this.board.findIndex((slot) => slot.includes(card));
+                this.board[pickedCardSlot].splice(-1, 1);
+                if (this.board[pickedCardSlot][this.board[pickedCardSlot].length - 1] < 0) {
+                    this.board[pickedCardSlot][this.board[pickedCardSlot].length - 1] = -this.board[pickedCardSlot][this.board[pickedCardSlot].length - 1];
+                }
             }
         },
         isOneLess(bigCard: number | string, smallCard: number | string) {
@@ -117,10 +122,10 @@ export const useMainStore = defineStore({
             if (this.isOneLess(this.getCardNumber(lastCardOnSlot), this.getCardNumber(pickedCard))) {
                 const pickedCardSlot = this.board.findIndex((slot) => slot.includes(pickedCard));
                 const indexOfPickedCard = this.board[pickedCardSlot].indexOf(pickedCard);
-                for (let i = indexOfPickedCard; i <= this.board[pickedCardSlot].length; i++) {
+                for (let i = indexOfPickedCard; i < this.board[pickedCardSlot].length; i++) {
                     this.board[droppedSlot].push(this.board[pickedCardSlot][i]);
-                    this.board[pickedCardSlot].splice(-1, 1);
                 }
+                this.board[pickedCardSlot].splice(indexOfPickedCard, this.board[pickedCardSlot].length - indexOfPickedCard);
                 this.board[pickedCardSlot][this.board[pickedCardSlot].length - 1] = -this.board[pickedCardSlot][this.board[pickedCardSlot].length - 1];
             }
         },
