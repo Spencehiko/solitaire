@@ -80,6 +80,9 @@ export const useMainStore = defineStore({
                 this.previousCard();
                 this.cards.splice(this.cards.indexOf(card), 1);
             }
+            if (this.cards.length === 0) {
+                this.activeCardIndex = -1;
+            }
         },
         sendCardToSlotFromBoard(card: number) {
             const suit = this.getCardSuit(card);

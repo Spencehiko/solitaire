@@ -36,9 +36,9 @@ const dragOverHandler = (slot: any) => {
                 <button
                     class="h-40 w-32 block mx-auto bg-darkest-green border-4 border-white rounded hover:bg-light-green transition-all duration-200"
                     @click="nextCard"
-                    v-if="activeCardIndex !== cards.length - 1"
+                    v-if="activeCardIndex !== cards.length - 1 && cards.length"
                 ></button>
-                <button class="h-40 w-32 border-2 border-transparent" @click="nextCard" v-else>
+                <button class="h-40 w-32 border-2 border-transparent" @click="nextCard" v-else-if="cards.length">
                     <img class="h-20 w-20 m-auto" src="reset.png" />
                 </button>
             </div>
