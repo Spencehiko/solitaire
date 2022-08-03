@@ -74,10 +74,11 @@ export const useMainStore = defineStore({
                 this.previousCard();
                 this.cards.splice(this.cards.indexOf(card), 1);
             }
-            if (number === "K" && this.board.findIndex((slot) => slot.length === 0) !== -1) {
-                const emptySlot = this.board.findIndex((slot) => slot.length === 0);
-                this.deleteCardFromBoard(card);
+            const emptySlot = this.board.findIndex((slot) => slot.length === 0);
+            if (number === "K" && emptySlot !== -1) {
                 this.board[emptySlot].push(card);
+                this.previousCard();
+                this.cards.splice(this.cards.indexOf(card), 1);
             }
         },
         sendCardToSlotFromBoard(card: number) {
@@ -86,12 +87,7 @@ export const useMainStore = defineStore({
             const cardToSendSlot = this.board.findIndex((slot) => slot.includes(card));
             const emptySlot = this.board.findIndex((slot) => slot.length === 0);
             if (number === "K" && emptySlot !== -1) {
-                const indexOfCard = this.board[cardToSendSlot].indexOf(card);
-                for (let i = indexOfCard; i < this.board[cardToSendSlot].length; i++) {
-                    this.board[emptySlot].push(this.board[cardToSendSlot][i]);
-                    this.board[cardToSendSlot].splice(-1, 1);
-                    this.board[cardToSendSlot][this.board[cardToSendSlot].length - 1] = -this.board[cardToSendSlot][this.board[cardToSendSlot].length - 1];
-                }
+                this.moveCardsToAnotherSlot(card, emptySlot);
             }
             if (this.board[cardToSendSlot][this.board[cardToSendSlot].length - 1] !== card) {
                 return;
@@ -111,6 +107,15 @@ export const useMainStore = defineStore({
             }
             return bigCard - 1 === smallCard;
         },
+        moveCardsToAnotherSlot(pickedCard: number, droppedSlot: number) {
+            const pickedCardSlot = this.board.findIndex((slot) => slot.includes(pickedCard));
+            const indexOfPickedCard = this.board[pickedCardSlot].indexOf(pickedCard);
+            for (let i = indexOfPickedCard; i < this.board[pickedCardSlot].length; i++) {
+                this.board[droppedSlot].push(this.board[pickedCardSlot][i]);
+            }
+            this.board[pickedCardSlot].splice(indexOfPickedCard, this.board[pickedCardSlot].length - indexOfPickedCard + 1);
+            this.board[pickedCardSlot][this.board[pickedCardSlot].length - 1] = -this.board[pickedCardSlot][this.board[pickedCardSlot].length - 1];
+        },
         checkDrop(pickedCard: number, droppedSlot: number) {
             const lastCardOnSlot = this.board[droppedSlot][this.board[droppedSlot].length - 1];
             if (lastCardOnSlot === pickedCard) {
@@ -120,13 +125,7 @@ export const useMainStore = defineStore({
                 return;
             }
             if (this.isOneLess(this.getCardNumber(lastCardOnSlot), this.getCardNumber(pickedCard))) {
-                const pickedCardSlot = this.board.findIndex((slot) => slot.includes(pickedCard));
-                const indexOfPickedCard = this.board[pickedCardSlot].indexOf(pickedCard);
-                for (let i = indexOfPickedCard; i < this.board[pickedCardSlot].length; i++) {
-                    this.board[droppedSlot].push(this.board[pickedCardSlot][i]);
-                }
-                this.board[pickedCardSlot].splice(indexOfPickedCard, this.board[pickedCardSlot].length - indexOfPickedCard);
-                this.board[pickedCardSlot][this.board[pickedCardSlot].length - 1] = -this.board[pickedCardSlot][this.board[pickedCardSlot].length - 1];
+                this.moveCardsToAnotherSlot(pickedCard, droppedSlot);
             }
         },
         checkDropFromCards(pickedCard: number, droppedSlot: number) {
