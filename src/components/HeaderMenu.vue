@@ -4,7 +4,7 @@ import { storeToRefs } from "pinia";
 
 const store = useMainStore();
 const { showConfirmDialog, autoFinish } = store;
-const { isAutoFinishAvailable } = storeToRefs(store);
+const { cards, board } = storeToRefs(store);
 </script>
 
 <template>
@@ -14,7 +14,7 @@ const { isAutoFinishAvailable } = storeToRefs(store);
             <button
                 @click="autoFinish()"
                 class="text-white border-2 border-white rounded p-4 h-14 leading-3 my-auto disabled:text-gray-700 disabled:border-gray-700 disabled:cursor-not-allowed"
-                :disabled="!isAutoFinishAvailable"
+                :disabled="!cards[0] && board.every((column) => column.length === 0)"
             >
                 Auto Finish
             </button>
