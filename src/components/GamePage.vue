@@ -39,7 +39,7 @@ const dragOverHandler = (slot: any) => {
                     v-if="activeCardIndex !== cards.length - 1 && cards.length"
                 ></button>
                 <button class="h-40 w-32 border-2 border-transparent" @click="nextCard" v-else-if="cards.length">
-                    <img class="h-20 w-20 m-auto" src="reset.png" />
+                    <img class="h-20 w-20 m-auto" src="@/assets/reset.png" />
                 </button>
             </div>
             <div class="basis-1/7">
