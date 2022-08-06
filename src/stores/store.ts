@@ -78,14 +78,12 @@ export const useMainStore = defineStore({
                 this.slots[suit] = card;
                 this.previousCard();
                 this.cards.splice(this.cards.indexOf(card), 1);
-                this.checkAutoFinish();
             }
             const emptySlot = this.board.findIndex((slot) => slot.length === 0);
             if (number === "K" && emptySlot !== -1) {
                 this.board[emptySlot].push(card);
                 this.previousCard();
                 this.cards.splice(this.cards.indexOf(card), 1);
-                this.checkAutoFinish();
             }
         },
         sendCardToSlotFromBoard(card: number) {
@@ -93,7 +91,7 @@ export const useMainStore = defineStore({
             const number = this.getCardNumber(card);
             const cardToSendSlot = this.board.findIndex((slot) => slot.includes(card));
             const emptySlot = this.board.findIndex((slot) => slot.length === 0);
-            if (number === "K" && emptySlot !== -1) {
+            if (number === "K" && emptySlot !== -1 && !this.board.every((column) => column.every((card) => card > 0))) {
                 this.moveCardsToAnotherSlot(card, emptySlot);
             }
             if (this.board[cardToSendSlot][this.board[cardToSendSlot].length - 1] !== card) {
@@ -106,7 +104,6 @@ export const useMainStore = defineStore({
                 if (this.board[pickedCardSlot][this.board[pickedCardSlot].length - 1] < 0) {
                     this.board[pickedCardSlot][this.board[pickedCardSlot].length - 1] = -this.board[pickedCardSlot][this.board[pickedCardSlot].length - 1];
                 }
-                this.checkAutoFinish();
             }
         },
         isOneLess(bigCard: number | string, smallCard: number | string) {
@@ -125,7 +122,6 @@ export const useMainStore = defineStore({
             if (this.board[pickedCardSlot][this.board[pickedCardSlot].length - 1] < 0) {
                 this.board[pickedCardSlot][this.board[pickedCardSlot].length - 1] = -this.board[pickedCardSlot][this.board[pickedCardSlot].length - 1];
             }
-            this.checkAutoFinish();
         },
         checkDrop(pickedCard: number, droppedSlot: number) {
             const lastCardOnSlot = this.board[droppedSlot][this.board[droppedSlot].length - 1];
@@ -151,7 +147,6 @@ export const useMainStore = defineStore({
                 this.board[droppedSlot].push(pickedCard);
                 this.cards.splice(this.cards.indexOf(pickedCard), 1);
                 this.previousCard();
-                this.checkAutoFinish();
             }
         },
         isColored(card: number) {
@@ -168,18 +163,17 @@ export const useMainStore = defineStore({
         showConfirmDialog() {
             this.isConfirmDialogOpen = true;
         },
-        checkAutoFinish() {
-            if (
-                this.cards.length === 0 &&
-                this.board.every((column) => {
-                    console.log(column);
-                })
-            ) {
-                console.log("autoFinish");
-            }
-        },
-        autoFinish() {
-            console.log("AAA");
+        autoFinish(timeout: number) {
+            this.board.forEach((column) => {
+                if (column.length !== 0) {
+                    setTimeout(() => {
+                        if (!this.board.every((column) => column.length === 0)) {
+                            this.sendCardToSlotFromBoard(column[column.length - 1]);
+                            this.autoFinish(timeout + 300);
+                        }
+                    }, timeout);
+                }
+            });
         },
     },
     persist: true,

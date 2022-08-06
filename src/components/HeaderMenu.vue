@@ -12,9 +12,9 @@ const { cards, board } = storeToRefs(store);
         <span>Solitaire</span>
         <div class="flex gap-5">
             <button
-                @click="autoFinish()"
+                @click="autoFinish(300)"
                 class="text-white border-2 border-white rounded p-4 h-14 leading-3 my-auto disabled:text-gray-700 disabled:border-gray-700 disabled:cursor-not-allowed"
-                :disabled="!(cards.length === 0 && board.every((column) => column.every((card) => card > 0)))"
+                :disabled="!(cards.length === 0 && board.every((column) => column.every((card) => card > 0) && column.length !== 0))"
             >
                 Auto Finish
             </button>
