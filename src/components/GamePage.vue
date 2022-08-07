@@ -10,7 +10,7 @@ const { startGame, nextCard, getCardNumber, getCardSuit, sendCardToSlot, sendCar
 onMounted(() => {
     activeCardIndex.value = -1;
     confirmDialog.value.show = false;
-    if (!cards.value[0] && board.value.every((column) => column.length === 0)) {
+    if (!cards.value[0] && board.value.every((column) => column.length === 0) && !slots.value.every((slot) => slot === -1)) {
         startGame();
     }
 });

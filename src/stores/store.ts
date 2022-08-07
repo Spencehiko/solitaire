@@ -17,10 +17,12 @@ export const useMainStore = defineStore({
             type: "newGame" | "restart";
         },
         isAutoFinishAvailable: false as boolean,
+        isGameFinished: false as boolean,
     }),
     getters: {},
     actions: {
         startGame() {
+            this.isGameFinished = false;
             const allCards = Array.from({ length: 52 }, (_, i) => i + 1);
             for (let i = allCards.length - 1; i > 0; i--) {
                 const j = Math.floor(Math.random() * (i + 1));
@@ -176,8 +178,9 @@ export const useMainStore = defineStore({
             };
         },
         autoFinish(timeout: number) {
+            this.isGameFinished = true;
             this.board.forEach((column) => {
-                if (column.length !== 0) {
+                if (column?.length !== 0) {
                     if (!this.board.every((column) => column.length === 0)) {
                         setTimeout(() => {
                             this.sendCardToSlotFromBoard(column[column.length - 1]);
@@ -188,7 +191,7 @@ export const useMainStore = defineStore({
             });
             setTimeout(() => {
                 this.showConfirmDialog("newGame");
-            }, 1000);
+            }, 4000);
         },
     },
     persist: true,
