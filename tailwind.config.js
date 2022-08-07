@@ -3,6 +3,9 @@ module.exports = {
     content: ["./index.html", "./src/**/*.{vue,js,ts,jsx,tsx}"],
     theme: {
         extend: {
+            margin: {
+                9: "2.25rem",
+            },
             height: {
                 "screen-20": "calc(100vh - 5rem)",
             },
