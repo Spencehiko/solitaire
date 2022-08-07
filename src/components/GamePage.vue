@@ -4,11 +4,12 @@ import { storeToRefs } from "pinia";
 import { onMounted } from "vue";
 
 const store = useMainStore();
-const { cards, activeCardIndex, board, slots } = storeToRefs(store);
+const { cards, activeCardIndex, board, slots, confirmDialog } = storeToRefs(store);
 const { startGame, nextCard, getCardNumber, getCardSuit, sendCardToSlot, sendCardToSlotFromBoard, checkDrop, checkDropFromCards } = store;
 
 onMounted(() => {
     activeCardIndex.value = -1;
+    confirmDialog.value.show = false;
     if (!cards.value[0] && board.value.every((column) => column.length === 0)) {
         startGame();
     }

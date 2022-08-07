@@ -7,11 +7,11 @@ import { storeToRefs } from "pinia";
 import { useMainStore } from "@/stores/store";
 
 const store = useMainStore();
-const { isConfirmDialogOpen } = storeToRefs(store);
+const { confirmDialog } = storeToRefs(store);
 </script>
 
 <template>
-    <div :class="{ blur: isConfirmDialogOpen }">
+    <div :class="{ blur: confirmDialog.show }">
         <HeaderMenu />
         <main class="bg-dark-green h-screen-20">
             <GamePage />

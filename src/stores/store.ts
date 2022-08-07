@@ -7,7 +7,15 @@ export const useMainStore = defineStore({
         cards: [] as number[],
         activeCardIndex: -1 as number,
         slots: [-1, -1, -1, -1] as [number, number, number, number],
-        isConfirmDialogOpen: false as boolean,
+        confirmDialog: {
+            show: false as boolean,
+            message: "" as string,
+            type: "restart" as "newGame" | "restart",
+        } as {
+            show: boolean;
+            message: string;
+            type: "newGame" | "restart";
+        },
         isAutoFinishAvailable: false as boolean,
     }),
     getters: {},
@@ -76,14 +84,14 @@ export const useMainStore = defineStore({
             const number = this.getCardNumber(card);
             if ((this.slots[suit] === -1 && number === "A") || this.isOneLess(number, this.getCardNumber(this.slots[suit]))) {
                 this.slots[suit] = card;
-                this.previousCard();
                 this.cards.splice(this.cards.indexOf(card), 1);
+                this.previousCard();
             }
             const emptySlot = this.board.findIndex((slot) => slot.length === 0);
             if (number === "K" && emptySlot !== -1) {
                 this.board[emptySlot].push(card);
-                this.previousCard();
                 this.cards.splice(this.cards.indexOf(card), 1);
+                this.previousCard();
             }
         },
         sendCardToSlotFromBoard(card: number) {
@@ -158,22 +166,29 @@ export const useMainStore = defineStore({
             this.slots = [-1, -1, -1, -1];
             this.activeCardIndex = -1;
             this.startGame();
-            this.isConfirmDialogOpen = false;
+            this.confirmDialog.show = false;
         },
-        showConfirmDialog() {
-            this.isConfirmDialogOpen = true;
+        showConfirmDialog(type: "newGame" | "restart") {
+            this.confirmDialog = {
+                show: true,
+                type: type,
+                message: type === "newGame" ? "Congratulations, you won! Would you like to play another one?" : "Are you sure you want to restart the game?",
+            };
         },
         autoFinish(timeout: number) {
             this.board.forEach((column) => {
                 if (column.length !== 0) {
-                    setTimeout(() => {
-                        if (!this.board.every((column) => column.length === 0)) {
+                    if (!this.board.every((column) => column.length === 0)) {
+                        setTimeout(() => {
                             this.sendCardToSlotFromBoard(column[column.length - 1]);
                             this.autoFinish(timeout + 300);
-                        }
-                    }, timeout);
+                        }, timeout);
+                    }
                 }
             });
+            setTimeout(() => {
+                this.showConfirmDialog("newGame");
+            }, 1000);
         },
     },
     persist: true,
