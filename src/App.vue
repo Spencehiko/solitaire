@@ -11,7 +11,7 @@ const { confirmDialog, isGameFinished } = storeToRefs(store);
 </script>
 
 <template>
-    <div :class="{ blur: confirmDialog.show }" class="overflow-hidden">
+    <div :class="{ blur: confirmDialog.show }" class="overflow-hidden select-none">
         <HeaderMenu />
         <main class="bg-dark-green h-screen-20">
             <GamePage />

@@ -5,6 +5,8 @@ import { onMounted } from "vue";
 
 import CardComponent from "./CardComponent.vue";
 
+import { ref } from "vue";
+
 const store = useMainStore();
 const { cards, activeCardIndex, board, slots, confirmDialog } = storeToRefs(store);
 const { startGame, nextCard, sendCardToSlot, sendCardToSlotFromBoard, checkDrop, checkDropFromCards } = store;
@@ -18,17 +20,19 @@ onMounted(() => {
 });
 
 let targetCard = -1;
-let droppedSlot = -1;
+const droppedSlot = ref(-1);
 const dragEndHandler = (card: any) => {
     targetCard = card;
-    checkDrop(targetCard, droppedSlot);
+    checkDrop(targetCard, droppedSlot.value);
+    droppedSlot.value = -1;
 };
 const dragEndHandlerFromCards = (card: any) => {
     targetCard = card;
-    checkDropFromCards(targetCard, droppedSlot);
+    checkDropFromCards(targetCard, droppedSlot.value);
+    droppedSlot.value = -1;
 };
 const dragOverHandler = (slot: any) => {
-    droppedSlot = slot;
+    droppedSlot.value = slot;
 };
 </script>
 
@@ -73,6 +77,7 @@ const dragOverHandler = (slot: any) => {
                     >
                         <CardComponent
                             class="border-2 border-darkest-green rounded -mt-36 mb-9"
+                            :class="{ 'border-green-500': droppedSlot === slot }"
                             :card-number="card"
                             draggable="true"
                             @click="sendCardToSlotFromBoard(card)"
